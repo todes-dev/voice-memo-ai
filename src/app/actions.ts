@@ -1,6 +1,6 @@
 'use server';
 
-import { transcribe } from '@/lib/ai/transcription';
+import { getTranscriptionStrategy } from '@/lib/ai/transcription';
 import { isValidFile } from '@/lib/validation';
 
 export async function transcribeAudio(formData: FormData) {
@@ -11,7 +11,7 @@ export async function transcribeAudio(formData: FormData) {
       return { success: false, error: 'Invalid or missing audio file' };
     }
 
-    const text = await transcribe(file);
+    const text = await getTranscriptionStrategy().transcribe(file);
 
     return { success: true, text };
   } catch (error) {

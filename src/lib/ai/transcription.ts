@@ -1,8 +1,13 @@
-/**
- * Transcribes audio using Gemini. Single implementation for Commit 1.
- */
+import type { ITranscriptionStrategy } from '@/types/ai';
+import { AppConfig } from '@/lib/config';
+import { DEMO_TRANSCRIPT } from '@/lib/demo-data';
 
-export async function transcribe(file: File): Promise<string> {
+function transcribeWithMock(file: File): Promise<string> {
+  void file;
+  return Promise.resolve(DEMO_TRANSCRIPT);
+}
+
+async function transcribeWithGemini(file: File): Promise<string> {
   const { GoogleGenerativeAI } = await import('@google/generative-ai');
 
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_KEY!);
@@ -17,4 +22,11 @@ export async function transcribe(file: File): Promise<string> {
   ]);
 
   return result.response.text();
+}
+
+const mockTranscriptionStrategy: ITranscriptionStrategy = { transcribe: transcribeWithMock };
+const geminiTranscriptionStrategy: ITranscriptionStrategy = { transcribe: transcribeWithGemini };
+
+export function getTranscriptionStrategy(): ITranscriptionStrategy {
+  return AppConfig.aiProvider === 'mock' ? mockTranscriptionStrategy : geminiTranscriptionStrategy;
 }
