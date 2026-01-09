@@ -13,6 +13,13 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // Enforce double quotes; single quotes report as errors.
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+    rules: {
+      quotes: ["error", "double"],
+    },
+  },
 ]);
 
 export default eslintConfig;
