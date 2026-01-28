@@ -7,10 +7,17 @@ import { transcribeAudio } from "@/app/actions";
 import { useCompletion } from "@ai-sdk/react";
 import { useAudioRecorder } from "@/hooks/use-audio-recorder";
 
+const PROVIDER_OPTIONS = [
+  { value: "mock", label: "Mock (demo)" },
+  { value: "gemini", label: "Gemini" },
+  { value: "openai", label: "OpenAI" },
+] as const;
+
 export default function VoiceRecorder() {
   const { isRecording, startRecording, stopRecording } = useAudioRecorder();
   const [transcript, setTranscript] = useState<string | null>(null);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [provider, setProvider] = useState<string>("mock");
 
   const { complete, completion, isLoading: isThinking } = useCompletion({
     api: "/api/summarize",
@@ -27,18 +34,19 @@ export default function VoiceRecorder() {
       setIsTranscribing(true);
       const formData = new FormData();
       formData.append("file", audioBlob);
+      formData.append("provider", provider);
       const result = await transcribeAudio(formData);
       setIsTranscribing(false);
 
       if (result.success && result.text) {
         setTranscript(result.text);
-        await complete(result.text);
+        await complete(result.text, { body: { provider } });
       } else {
         alert(`Transcription failed: ${result.error ?? "Unknown error"}`);
       }
     } catch {
       setIsTranscribing(false);
-        alert("An unexpected error occurred. Please try again.");
+      alert("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -47,6 +55,25 @@ export default function VoiceRecorder() {
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold tracking-tight text-slate-900">VoiceMemo AI</h2>
         <p className="text-sm text-slate-500">Capture ideas. Get structured summaries.</p>
+      </div>
+
+      <div className="w-full flex flex-col gap-2">
+        <label htmlFor="provider" className="text-sm font-medium text-slate-700">
+          Provider
+        </label>
+        <select
+          id="provider"
+          value={provider}
+          onChange={(e) => setProvider(e.target.value)}
+          disabled={isRecording || isTranscribing || isThinking}
+          className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
+        >
+          {PROVIDER_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex gap-6 items-center">

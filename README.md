@@ -20,8 +20,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 Copy `.env.example` to `.env` and adjust:
 
-- **`AI_PROVIDER`** – `mock` (default) uses demo transcript + summary, no API key. `gemini` uses Google Gemini for real transcription and streaming summary.
-- **`GOOGLE_GENERATIVE_AI_KEY`** – Required when `AI_PROVIDER=gemini`.
+- **`AI_PROVIDER`** – `mock` (default), `gemini`, or `openai`. You can also pick a provider in the UI.
+- **`GOOGLE_GENERATIVE_AI_KEY`** – Required when using Gemini (transcription + summary).
+- **`OPENAI_API_KEY`** – Required when using OpenAI (Whisper transcription + GPT-4o-mini summary).
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

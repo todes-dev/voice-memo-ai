@@ -1,5 +1,5 @@
 import { getSummaryStrategy } from "@/lib/ai/summary";
-import { extractPrompt } from "@/lib/validation";
+import { extractPrompt, extractProvider } from "@/lib/validation";
 
 export const maxDuration = 30;
 
@@ -7,6 +7,7 @@ export async function POST(req: Request): Promise<Response> {
   try {
     const body = await req.json().catch(() => ({}));
     const prompt = extractPrompt(body);
+    const providerOverride = extractProvider(body);
 
     if (!prompt) {
       return new Response(
@@ -18,7 +19,7 @@ export async function POST(req: Request): Promise<Response> {
       );
     }
 
-    return await getSummaryStrategy().summarize(prompt);
+    return await getSummaryStrategy(providerOverride).summarize(prompt);
   } catch (error) {
     console.error("Error in summarize route:", error);
     return new Response(
