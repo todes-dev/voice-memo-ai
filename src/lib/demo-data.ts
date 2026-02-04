@@ -1,4 +1,4 @@
-export const DEMO_TRANSCRIPT = 
+export const DEMO_TRANSCRIPT =
   "I need to finish the portfolio project by Friday. I also need to buy milk, coffee, and renew my gym membership. Oh, and remind me to email Sarah about the design system updates.";
 
 export const DEMO_SUMMARY = `### 🎯 Key Takeaways

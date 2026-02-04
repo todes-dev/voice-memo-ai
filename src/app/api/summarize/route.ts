@@ -9,10 +9,10 @@ export async function POST(req: Request): Promise<Response> {
     const result = SummarizeSchema.safeParse(body);
 
     if (!result.success) {
-      return new Response(
-        JSON.stringify({ error: "Invalid request: Prompt is required" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Invalid request: Prompt is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const { prompt, provider } = result.data;
