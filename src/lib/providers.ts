@@ -10,23 +10,50 @@ export interface ProviderOption {
 
 // Centralized provider configuration with all metadata
 export const PROVIDER_CONFIG = {
-  gemini: { label: "Gemini", priority: 1 },
-  openai: { label: "OpenAI", priority: 2 },
-  mock: { label: "Mock", priority: 3 },
+  gemini: { 
+    label: "Gemini", 
+    envVar: "GOOGLE_GENERATIVE_AI_API_KEY", 
+    priority: 1,
+    models: {
+      chat: "gemini-2.5-flash",
+      audio: "gemini-2.5-flash" 
+    },
+  },
+  openai: { 
+    label: "OpenAI", 
+    envVar: "OPENAI_API_KEY", 
+    priority: 2,
+    models: {
+      chat: "gpt-4o-mini",
+      audio: "whisper-1"
+    },
+  },
+  mock: { 
+    label: "Mock", 
+    envVar: null, 
+    priority: 3,
+    models: {
+      chat: "mock",
+      audio: "mock"
+    },
+  },
 } as const;
+
+export function getProviderEnvVar(provider: AIProvider): string | null {
+  return PROVIDER_CONFIG[provider]?.envVar ?? null;
+}
 
 export function getProviderLabel(provider: AIProvider): string {
   return PROVIDER_CONFIG[provider].label;
 }
 
-// Server-side only: Get available providers based on API keys
 export function getValidProvidersSync(): AIProvider[] {
   const IS_DEV = process.env.NODE_ENV === "development";
 
   const available = (Object.keys(PROVIDER_CONFIG) as AIProvider[])
     .filter((p) => {
       if (p === "mock") return IS_DEV;
-      return hasApiKey(p);
+      return hasApiKey(PROVIDER_CONFIG[p]?.envVar ?? null);
     })
     .sort((a, b) => PROVIDER_CONFIG[a].priority - PROVIDER_CONFIG[b].priority);
 

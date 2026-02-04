@@ -1,19 +1,23 @@
 import type { LanguageModelV3 } from "@ai-sdk/provider";
 import { streamText, createUIMessageStreamResponse} from "ai";
 import type { AIProvider, LLMProvider } from "./providers";
-import { resolveProvider } from "./providers";
-import { getGeminiApiKey, getOpenAIApiKey } from "./api-keys";
+import { PROVIDER_CONFIG, resolveProvider } from "./providers";
+import { getApiKey } from "./api-keys";
 import { DEMO_SUMMARY } from "./demo-data";
-import { MODEL_IDS, SUMMARY_SYSTEM_PROMPT } from "./ai-config";
+import { SUMMARY_SYSTEM_PROMPT } from "./ai-config";
 
 const MODELS: Record<LLMProvider, () => Promise<LanguageModelV3>> = {
   gemini: async () => {
     const { createGoogleGenerativeAI } = await import("@ai-sdk/google");
-    return createGoogleGenerativeAI({ apiKey: getGeminiApiKey() })(MODEL_IDS.gemini);
+    const apiKey = getApiKey(PROVIDER_CONFIG.gemini.envVar);
+
+    return createGoogleGenerativeAI({ apiKey })(PROVIDER_CONFIG.gemini.models.chat);
   },
   openai: async () => {
     const { createOpenAI } = await import("@ai-sdk/openai");
-    return createOpenAI({ apiKey: getOpenAIApiKey() })(MODEL_IDS.openai);
+    const apiKey = getApiKey(PROVIDER_CONFIG.openai.envVar);
+
+    return createOpenAI({ apiKey })(PROVIDER_CONFIG.openai.models.chat);
   },
 };
 
