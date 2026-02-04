@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 
 export function useAudioRecorder() {
   const [isRecording, setIsRecording] = useState(false);
@@ -30,14 +30,14 @@ export function useAudioRecorder() {
       mediaRecorderRef.current.onstop = () => {
         const mimeType = mediaRecorderRef.current?.mimeType || "audio/webm";
         const audioBlob = new Blob(chunksRef.current, { type: mimeType });
-        resolve(audioBlob); 
+        resolve(audioBlob);
       };
 
       mediaRecorderRef.current.stop();
       setIsRecording(false);
-      
+
       // Cleanup tracks to turn off the red dot on the browser tab
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
     });
   }, []);
 

@@ -1,5 +1,5 @@
-import VoiceRecorder from "@/components/voice-recorder";
 import { getAvailableProviders } from "@/app/actions";
+import VoiceRecorder from "@/components/voice-recorder";
 
 export default async function Home() {
   const { providers } = await getAvailableProviders();

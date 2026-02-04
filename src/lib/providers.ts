@@ -10,31 +10,31 @@ export interface ProviderOption {
 
 // Centralized provider configuration with all metadata
 export const PROVIDER_CONFIG = {
-  gemini: { 
-    label: "Gemini", 
-    envVar: "GOOGLE_GENERATIVE_AI_API_KEY", 
+  gemini: {
+    label: "Gemini",
+    envVar: "GOOGLE_GENERATIVE_AI_API_KEY",
     priority: 1,
     models: {
       chat: "gemini-2.5-flash",
-      audio: "gemini-2.5-flash" 
+      audio: "gemini-2.5-flash",
     },
   },
-  openai: { 
-    label: "OpenAI", 
-    envVar: "OPENAI_API_KEY", 
+  openai: {
+    label: "OpenAI",
+    envVar: "OPENAI_API_KEY",
     priority: 2,
     models: {
       chat: "gpt-4o-mini",
-      audio: "whisper-1"
+      audio: "whisper-1",
     },
   },
-  mock: { 
-    label: "Mock", 
-    envVar: null, 
+  mock: {
+    label: "Mock",
+    envVar: null,
     priority: 3,
     models: {
       chat: "mock",
-      audio: "mock"
+      audio: "mock",
     },
   },
 } as const;

@@ -1,10 +1,11 @@
 import type { LanguageModelV3 } from "@ai-sdk/provider";
-import { streamText, createUIMessageStreamResponse} from "ai";
-import type { AIProvider, LLMProvider } from "./providers";
-import { PROVIDER_CONFIG, resolveProvider } from "./providers";
+import { createUIMessageStreamResponse, streamText } from "ai";
+
 import { getApiKey } from "./api-keys";
 import { DEMO_SUMMARY } from "./demo-data";
 import { SUMMARY_SYSTEM_PROMPT } from "./prompts";
+import type { AIProvider, LLMProvider } from "./providers";
+import { PROVIDER_CONFIG, resolveProvider } from "./providers";
 
 const MODELS: Record<LLMProvider, () => Promise<LanguageModelV3>> = {
   gemini: async () => {

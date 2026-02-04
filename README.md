@@ -14,7 +14,7 @@ A voice memo app that records audio and transcribes it using AI, and generates s
 
 **Framework:** Next.js 16 (App Router) • TypeScript  
 **UI:** React • Tailwind CSS • shadcn/ui  
-**AI:** Vercel AI SDK • Google Gemini • OpenAI  
+**AI:** Vercel AI SDK • Google Gemini • OpenAI
 
 ## 🏗️ Architecture
 
@@ -55,12 +55,14 @@ OPENAI_API_KEY=your_openai_key
 ## 🗺️ Roadmap
 
 **Current version**
+
 - Voice recording & transcription
 - AI-powered summaries with streaming
 - Multi-provider support
 - State machine architecture
 
 **Next steps**
+
 - User authentication (login/signup)
 - Database persistence (Prisma + PostgreSQL?)
 - Memo history & search

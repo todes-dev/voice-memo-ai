@@ -1,13 +1,13 @@
 "use server";
 
-import { transcribe } from "@/lib/transcription";
-import { TranscribeSchema } from "@/lib/validation";
 import type { ProviderOption } from "@/lib/providers";
 import { PROVIDER_CONFIG, getValidProvidersSync } from "@/lib/providers";
+import { transcribe } from "@/lib/transcription";
+import { TranscribeSchema } from "@/lib/validation";
 
 export async function transcribeAudio(formData: FormData) {
   try {
-   const result = TranscribeSchema.safeParse({
+    const result = TranscribeSchema.safeParse({
       file: formData.get("file"),
       provider: formData.get("provider"),
     });
