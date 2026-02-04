@@ -20,7 +20,7 @@ const eslintConfig = defineConfig([
   {
     files: ["**/*.ts", "**/*.tsx"],
     rules: {
-      quotes: ["error", "double"],
+      "no-console": ["warn", { allow: ["error"] }],
     },
   },
 ]);
