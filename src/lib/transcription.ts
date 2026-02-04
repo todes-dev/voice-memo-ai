@@ -2,7 +2,7 @@ import type { AIProvider,  } from "./providers";
 import { resolveProvider, PROVIDER_CONFIG } from "./providers";
 import { getApiKey } from "./api-keys";
 import { DEMO_TRANSCRIPT } from "./demo-data";
-import { TRANSCRIBE_PROMPT, AUDIO_MIME_TYPE } from "./ai-config";
+import { TRANSCRIBE_PROMPT } from "./ai-config";
 
 async function transcribeWithMock(): Promise<string> {
   return DEMO_TRANSCRIPT;
@@ -20,7 +20,7 @@ async function transcribeWithGemini(file: File): Promise<string> {
   const base64Audio = Buffer.from(arrayBuffer).toString("base64");
 
   const result = await model.generateContent([
-    { inlineData: { mimeType: AUDIO_MIME_TYPE, data: base64Audio } },
+    { inlineData: { mimeType: file.type, data: base64Audio } },
     { text: TRANSCRIBE_PROMPT },
   ]);
 
@@ -30,7 +30,7 @@ async function transcribeWithGemini(file: File): Promise<string> {
 async function transcribeWithOpenAI(file: File): Promise<string> {
   const { experimental_transcribe: transcribe } = await import("ai");
   const { createOpenAI } = await import("@ai-sdk/openai");
-  
+
   const apiKey = getApiKey(PROVIDER_CONFIG.openai.envVar);
   const openai = createOpenAI({ apiKey });
 

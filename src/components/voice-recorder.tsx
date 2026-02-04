@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { transcribeAudio, getAvailableProviders } from "@/app/actions";
+import { transcribeAudio } from "@/app/actions";
 import { useCompletion } from "@ai-sdk/react";
 import { useAudioRecorder } from "@/hooks/use-audio-recorder";
 import type { ProviderOption } from "@/lib/providers";
@@ -13,31 +13,16 @@ import { ResultCard } from "@/components/result-card";
 import type { AppState } from "@/types/app-state";
 import { getDisplayStatus } from "@/types/app-state";
 
-export default function VoiceRecorder() {
-  const { isRecording, startRecording, stopRecording } = useAudioRecorder();
-  const [state, setState] = useState<AppState>({ status: "idle" });
-  const [provider, setProvider] = useState<string>("");
-  const [providerOptions, setProviderOptions] = useState<ProviderOption[]>([]);
-  const [isLoadingProviders, setIsLoadingProviders] = useState(true);
 
-  // Fetch available providers on mount
-  useEffect(() => {
-    getAvailableProviders()
-      .then(({ providers }) => {
-        setProviderOptions(providers);
-        setProvider(providers[0].value);
-      })
-      .catch((error) => {
-        console.error("Failed to load providers:", error);
-        setState({
-          status: "error",
-          message: "Failed to load AI providers. Please check your configuration.",
-        });
-      })
-      .finally(() => {
-        setIsLoadingProviders(false);
-      });
-  }, []);
+interface Props {
+  initialProviders: ProviderOption[];
+}
+
+export default function VoiceRecorder({ initialProviders }: Props) {
+  const { isRecording, startRecording, stopRecording } = useAudioRecorder();
+
+  const [state, setState] = useState<AppState>({ status: "idle" });
+  const [provider, setProvider] = useState<string>(initialProviders[0]?.value || "");
 
   const { complete, completion, isLoading: isThinking } = useCompletion({
     api: "/api/summarize",
@@ -92,16 +77,12 @@ export default function VoiceRecorder() {
         <p className="text-sm text-slate-500">Capture ideas. Get structured summaries.</p>
       </div>
 
-      {isLoadingProviders ? (
-        <div className="text-sm text-slate-500">Loading providers...</div>
-      ) : (
         <ProviderSelect
           value={provider}
           onChange={setProvider}
           disabled={isRecording || isBusy}
-          options={providerOptions}
+          options={initialProviders}
         />
-      )}
 
       <div className="flex gap-6 items-center">
         <RecordButton

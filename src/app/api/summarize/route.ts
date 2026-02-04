@@ -1,25 +1,23 @@
 import { summarize } from "@/lib/summary";
-import { extractPrompt, extractProvider } from "@/lib/validation";
+import { SummarizeSchema } from "@/lib/validation";
 
 export const maxDuration = 30;
 
 export async function POST(req: Request): Promise<Response> {
   try {
     const body = await req.json().catch(() => ({}));
-    const prompt = extractPrompt(body);
-    const providerOverride = extractProvider(body);
+    const result = SummarizeSchema.safeParse(body);
 
-    if (!prompt) {
+    if (!result.success) {
       return new Response(
-        JSON.stringify({ error: "Missing or empty prompt" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
+        JSON.stringify({ error: "Invalid request: Prompt is required" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    return await summarize(prompt, providerOverride);
+    const { prompt, provider } = result.data;
+
+    return await summarize(prompt, provider);
   } catch (error) {
     console.error("Error in summarize route:", error);
     return new Response(

@@ -1,24 +1,16 @@
-export function isValidNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.trim().length > 0;
-}
+import { z } from "zod";
 
-export function isValidFile(value: unknown): value is File {
-  return value instanceof File && value.size > 0;
-}
+// Replaces 'isValidFile' and manual provider checks
+export const TranscribeSchema = z.object({
+  file: z
+    .instanceof(File, { message: "Audio file is required" })
+    .refine((file) => file.size > 0, "File is empty")
+    .refine((file) => file.size < 10 * 1024 * 1024, "File size must be less than 10MB"),
+  provider: z.string().optional(),
+});
 
-export function extractPrompt(body: unknown): string | null {
-  if (typeof body !== "object" || body === null) {
-    return null;
-  }
-
-  const prompt = "prompt" in body ? body.prompt : undefined;
-  return isValidNonEmptyString(prompt) ? prompt : null;
-}
-
-export function extractProvider(body: unknown): string | null {
-  if (typeof body !== "object" || body === null) {
-    return null;
-  }
-  const provider = "provider" in body ? body.provider : undefined;
-  return typeof provider === "string" && provider.trim().length > 0 ? provider.trim() : null;
-}
+// Replaces 'extractPrompt', 'extractProvider', and 'isValidNonEmptyString'
+export const SummarizeSchema = z.object({
+  prompt: z.string().min(1, "Prompt is required"),
+  provider: z.string().optional(),
+});
