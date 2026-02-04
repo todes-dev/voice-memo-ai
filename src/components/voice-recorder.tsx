@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { transcribeAudio } from "@/app/actions";
 import { useCompletion } from "@ai-sdk/react";
 import { useAudioRecorder } from "@/hooks/use-audio-recorder";
-import { DEFAULT_AI_PROVIDER } from "@/lib/providers";
+import type { ProviderOption } from "@/lib/providers";
 import { ProviderSelect } from "@/components/provider-select";
 import { RecordButton } from "@/components/record-button";
 import { StatusIndicator } from "@/components/status-indicator";
@@ -13,10 +13,16 @@ import { ResultCard } from "@/components/result-card";
 import type { AppState } from "@/types/app-state";
 import { getDisplayStatus } from "@/types/app-state";
 
-export default function VoiceRecorder() {
+
+interface Props {
+  initialProviders: ProviderOption[];
+}
+
+export default function VoiceRecorder({ initialProviders }: Props) {
   const { isRecording, startRecording, stopRecording } = useAudioRecorder();
+
   const [state, setState] = useState<AppState>({ status: "idle" });
-  const [provider, setProvider] = useState<string>(DEFAULT_AI_PROVIDER);
+  const [provider, setProvider] = useState<string>(initialProviders[0]?.value || "");
 
   const { complete, completion, isLoading: isThinking } = useCompletion({
     api: "/api/summarize",
@@ -71,11 +77,12 @@ export default function VoiceRecorder() {
         <p className="text-sm text-slate-500">Capture ideas. Get structured summaries.</p>
       </div>
 
-      <ProviderSelect
-        value={provider}
-        onChange={setProvider}
-        disabled={isRecording || isBusy}
-      />
+        <ProviderSelect
+          value={provider}
+          onChange={setProvider}
+          disabled={isRecording || isBusy}
+          options={initialProviders}
+        />
 
       <div className="flex gap-6 items-center">
         <RecordButton

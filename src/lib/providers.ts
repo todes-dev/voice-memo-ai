@@ -1,30 +1,76 @@
+import { hasApiKey } from "./api-keys";
+
 export type AIProvider = "mock" | "gemini" | "openai";
 export type LLMProvider = Exclude<AIProvider, "mock">;
 
-const IS_DEV = process.env.NODE_ENV === "development";
-const VALID_PROVIDERS: AIProvider[] = IS_DEV ? ["mock", "gemini", "openai"] : ["gemini", "openai"];
+export interface ProviderOption {
+  value: AIProvider;
+  label: string;
+}
 
-const PROVIDER_LABELS: Record<AIProvider, string> = {
-  mock: "Mock",
-  gemini: "Gemini",
-  openai: "OpenAI",
-};
+// Centralized provider configuration with all metadata
+export const PROVIDER_CONFIG = {
+  gemini: { 
+    label: "Gemini", 
+    envVar: "GOOGLE_GENERATIVE_AI_API_KEY", 
+    priority: 1,
+    models: {
+      chat: "gemini-2.5-flash",
+      audio: "gemini-2.5-flash" 
+    },
+  },
+  openai: { 
+    label: "OpenAI", 
+    envVar: "OPENAI_API_KEY", 
+    priority: 2,
+    models: {
+      chat: "gpt-4o-mini",
+      audio: "whisper-1"
+    },
+  },
+  mock: { 
+    label: "Mock", 
+    envVar: null, 
+    priority: 3,
+    models: {
+      chat: "mock",
+      audio: "mock"
+    },
+  },
+} as const;
 
-const DEFAULT_FALLBACK_PROVIDER: AIProvider = IS_DEV ? "mock" : "gemini";
+export function getProviderEnvVar(provider: AIProvider): string | null {
+  return PROVIDER_CONFIG[provider]?.envVar ?? null;
+}
 
-const rawProvider = process.env.AI_PROVIDER || DEFAULT_FALLBACK_PROVIDER;
-export const DEFAULT_AI_PROVIDER: AIProvider = VALID_PROVIDERS.includes(rawProvider as AIProvider)
-  ? (rawProvider as AIProvider)
-  : DEFAULT_FALLBACK_PROVIDER;
+export function getProviderLabel(provider: AIProvider): string {
+  return PROVIDER_CONFIG[provider].label;
+}
 
-export const PROVIDER_OPTIONS: { value: AIProvider; label: string }[] = VALID_PROVIDERS.map(
-  (p) => ({ value: p, label: PROVIDER_LABELS[p] })
-);
+export function getValidProvidersSync(): AIProvider[] {
+  const IS_DEV = process.env.NODE_ENV === "development";
+
+  const available = (Object.keys(PROVIDER_CONFIG) as AIProvider[])
+    .filter((p) => {
+      if (p === "mock") return IS_DEV;
+      return hasApiKey(PROVIDER_CONFIG[p]?.envVar ?? null);
+    })
+    .sort((a, b) => PROVIDER_CONFIG[a].priority - PROVIDER_CONFIG[b].priority);
+
+  if (available.length === 0) {
+    throw new Error(
+      "No valid AI providers configured. Please set GOOGLE_GENERATIVE_AI_API_KEY or OPENAI_API_KEY in .env"
+    );
+  }
+
+  return available;
+}
 
 export function resolveProvider(override: unknown): AIProvider {
-  const provider = typeof override === "string" ? override.trim().toLowerCase() : "";
-  if (provider && VALID_PROVIDERS.includes(provider as AIProvider)) {
-    return provider as AIProvider;
-  }
-  return DEFAULT_AI_PROVIDER;
+  const validProviders = getValidProvidersSync();
+
+  if (typeof override !== "string") return validProviders[0];
+
+  const normalized = override.trim().toLowerCase() as AIProvider;
+  return validProviders.includes(normalized) ? normalized : validProviders[0];
 }

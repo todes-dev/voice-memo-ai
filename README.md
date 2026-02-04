@@ -40,15 +40,18 @@ Open [http://localhost:3000](http://localhost:3000)
 ## 🔧 Environment Variables
 
 ```bash
-# AI Provider (optional, defaults to mock in dev)
-AI_PROVIDER=mock  # or "gemini" | "openai"
+# OpenAI (Whisp
+# AI Providers are auto-detected based on which API keys you set
+# The app will show only the providers with valid API keys
 
-# API Keys (required for respective providers)
-GOOGLE_GENERATIVE_AI_KEY=your_gemini_key
+# Google Gemini (transcription + summary)
+GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_key
+
+# OpenAI (Whisper transcription + GPT summary)
 OPENAI_API_KEY=your_openai_key
 ```
 
-**Note:** Use `AI_PROVIDER=mock` for development without API keys.
+**Note:** In development, a "Mock" provider is always available for testing without API keys. Just leave the API key variables unset.
 
 ## 🗺️ Roadmap
 
