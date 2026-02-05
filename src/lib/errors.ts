@@ -1,6 +1,5 @@
 export function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
-    // Check for common API errors
     if (error.message.includes("API key")) {
       return "Invalid API key. Please check your configuration.";
     }
@@ -10,7 +9,6 @@ export function getErrorMessage(error: unknown): string {
     if (error.message.includes("network") || error.message.includes("fetch failed")) {
       return "Network error. Please check your connection and try again.";
     }
-    // Return the actual error message
     return error.message;
   }
   return "An unexpected error occurred";
