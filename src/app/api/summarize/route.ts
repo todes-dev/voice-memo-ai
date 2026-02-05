@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/lib/errors";
 import { summarize } from "@/lib/summary";
 import { SummarizeSchema } from "@/lib/validation";
 
@@ -20,12 +21,9 @@ export async function POST(req: Request): Promise<Response> {
     return await summarize(prompt, provider);
   } catch (error) {
     console.error("Error in summarize route:", error);
-    return new Response(
-      JSON.stringify({ error: "An error occurred while generating the summary" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ error: getErrorMessage(error) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }

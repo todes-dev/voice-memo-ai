@@ -1,5 +1,6 @@
 "use server";
 
+import { getErrorMessage } from "@/lib/errors";
 import type { ProviderOption } from "@/lib/providers";
 import { PROVIDER_CONFIG, getValidProvidersSync } from "@/lib/providers";
 import { transcribe } from "@/lib/transcription";
@@ -22,7 +23,7 @@ export async function transcribeAudio(formData: FormData) {
     return { success: true, text };
   } catch (error) {
     console.error("Transcription error:", error);
-    return { success: false, error: "Transcription failed" };
+    return { success: false, error: getErrorMessage(error) };
   }
 }
 

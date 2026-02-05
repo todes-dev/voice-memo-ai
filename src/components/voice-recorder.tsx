@@ -63,13 +63,23 @@ export default function VoiceRecorder({ initialProviders }: Props) {
       }
     } catch (err) {
       console.error("Unexpected error during transcription:", err);
-      setState({ status: "error", message: "An unexpected error occurred. Please try again." });
+      const message =
+        err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
+      setState({ status: "error", message });
     }
   };
 
-  const handleStartRecording = () => {
-    setState({ status: "recording" });
-    startRecording();
+  const handleStartRecording = async () => {
+    try {
+      setState({ status: "recording" });
+      await startRecording();
+    } catch (err) {
+      console.error("Unexpected error during recording:", err);
+      setState({
+        status: "error",
+        message: "Microphone access denied. Please check your browser permissions.",
+      });
+    }
   };
 
   const isBusy = state.status === "transcribing" || isThinking;
