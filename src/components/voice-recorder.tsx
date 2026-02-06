@@ -37,8 +37,7 @@ export default function VoiceRecorder({ initialProviders }: Props) {
         setState({ status: "complete", transcript: state.transcript, summary });
       }
     },
-    onError: (err) => {
-      console.error("Summary error:", err);
+    onError: () => {
       setState({ status: "error", message: "Summary failed. Please try again." });
     },
   });
@@ -58,11 +57,10 @@ export default function VoiceRecorder({ initialProviders }: Props) {
         await complete(result.text, { body: { provider } });
       } else {
         const errorMsg = `Transcription failed: ${result.error ?? "Unknown error"}`;
-        console.error(errorMsg);
+
         setState({ status: "error", message: errorMsg });
       }
     } catch (err) {
-      console.error("Unexpected error during transcription:", err);
       const message =
         err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
       setState({ status: "error", message });
@@ -71,10 +69,9 @@ export default function VoiceRecorder({ initialProviders }: Props) {
 
   const handleStartRecording = async () => {
     try {
-      setState({ status: "recording" });
       await startRecording();
-    } catch (err) {
-      console.error("Unexpected error during recording:", err);
+      setState({ status: "recording" });
+    } catch {
       setState({
         status: "error",
         message: "Microphone access denied. Please check your browser permissions.",
@@ -91,13 +88,14 @@ export default function VoiceRecorder({ initialProviders }: Props) {
         <h2 className="text-2xl font-bold tracking-tight text-slate-900">VoiceMemo AI</h2>
         <p className="text-sm text-slate-500">Capture ideas. Get structured summaries.</p>
       </div>
-
-      <ProviderSelect
-        value={provider}
-        onChange={setProvider}
-        disabled={isRecording || isBusy}
-        options={initialProviders}
-      />
+      {initialProviders.length > 2 && (
+        <ProviderSelect
+          value={provider}
+          onChange={setProvider}
+          disabled={isRecording || isBusy}
+          options={initialProviders}
+        />
+      )}
 
       <div className="flex gap-6 items-center">
         <RecordButton
